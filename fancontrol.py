@@ -9,10 +9,6 @@ import re
 
 
 class FanControl:
-    self.temp1 = 0
-    self.temp2 = 0
-    self.temp3 = 0
-    
     def setTemp(self):
         validInput = False
         
@@ -21,20 +17,21 @@ class FanControl:
                 self.temp1 = int(raw_input("Input first temp. level:  "))
                 self.temp2 = int(raw_input("Input second temp. level:  "))
                 self.temp3 = int(raw_input("Input third temp. level:  "))
-                
-                validInput = True
-            except(TypeError):
+            except(ValueError):
                 print "Invalid input, try again."
                 continue
             
+            validInput = True
             print "Temperatures set."
     
     def __init__(self):
-        useDefault = raw_input("Would you like to set the temperatures manually? Press 'enter' to use default values")
+        useDefault = raw_input("Would you like to set the temperatures manually? y/n\n")
         
-        if len(useDefault.strip) == 0:
+        if len(useDefault.strip()) == 0:
             self.temp1 = 35
             self.temp2 = 45
             self.temp3 = 60
         else:
-            setTemp()
+            self.setTemp()
+            
+FanControl1 = FanControl()
