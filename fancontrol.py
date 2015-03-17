@@ -41,9 +41,8 @@ class FanControl:
             content = file.read()
             
             self.temperature = re.search("temp\=([\d\.]+)\'C", content, re.VERBOSE|re.MULTILINE)
-            return self.temperature
+            return int(self.temperature.group())
         
-    
     def setTemp(self, mode=False):
         """Set the temperatures (temp) either automatically or manually with user input"""
 
