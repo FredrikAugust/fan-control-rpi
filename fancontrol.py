@@ -27,8 +27,8 @@ class FanControl:
         
         self.tempLights = [18, 23, 24]  # 18 = low, 23 = med, 24 = hot
         
-        GPIO.setup(fanAuto, GPIO.IN)  # reads from the fanAuto pin
-        GPIO.setup(tempLights, GPIO.OUT)  # sets these pins to output
+        GPIO.setup(self.fanAuto, GPIO.IN)  # reads from the fanAuto pin
+        GPIO.setup(self.tempLights, GPIO.OUT)  # sets these pins to output
         
         print "Pins are set"
     
