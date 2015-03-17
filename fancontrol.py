@@ -40,8 +40,8 @@ class FanControl:
         with open("readTemp.txt") as file:
             content = file.read()
             
-            self.temperature = re.search("temp\=([\d\.]+)\'C", content, re.VERBOSE|re.MULTILINE)
-            return int(self.temperature.group())
+            self.temperature = re.search("temp\=(?P=temp[\d\.]+)\'C", content, re.VERBOSE|re.MULTILINE)
+            return float(self.temperature.group('temp'))
         
     def setTemp(self, mode=False):
         """Set the temperatures (temp) either automatically or manually with user input"""
