@@ -37,7 +37,7 @@ class FanControl:
     def getTemp(self):
         os.system("/opt/vc/bin/vcgencmd measure_temp >> readTemp.txt")
         
-        with open(readTemp.txt) as file:
+        with open("readTemp.txt") as file:
             content = file.read()
             
             self.temperature = re.search("temp\=([\d\.]+)\'C", content, re.VERBOSE|re.MULTILINE)
