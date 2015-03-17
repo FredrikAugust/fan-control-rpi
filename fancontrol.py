@@ -80,9 +80,9 @@ class FanControl:
         else:
             self.setTemp(True)
             
-        self.setPins(self)
+        self.setPins()
         
-        self.tempTemp = self.getTemp(self)
+        self.tempTemp = self.getTemp()
         print self.tempTemp
 
 Control = FanControl()
