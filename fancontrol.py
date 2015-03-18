@@ -92,9 +92,15 @@ class FanControl:
         self.setPins()
         
         self.tempTemp = self.getTemp()
-        print self.tempTemp  # Debug
 
 
 
-clearScreen()
-Control = FanControl()
+class Program:
+    def Main(self):
+        self.temperatureControl = FanControl()
+
+        print "Temperature:", self.temperatureControl.getTemp()  # Debug
+
+
+program = Program()  # Instanciate main class
+program.Main()  # Start the program
