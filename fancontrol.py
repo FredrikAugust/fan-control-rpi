@@ -13,6 +13,10 @@ except ImportError:
     exit("Could not locate RPi library")
 
 
+def clearScreen():
+    os.system("clear")
+
+
 
 class FanControl:
     def setPins(self):
@@ -92,4 +96,5 @@ class FanControl:
 
 
 
+clearScreen()
 Control = FanControl()
