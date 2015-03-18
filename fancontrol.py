@@ -5,9 +5,9 @@ Copyrights: MrMadsenMalmo 2015
 
 import re
 from sys import exit
-from time import sleep
+from time import sleep, strftime, strftime
 import os
-from datetime import datetime
+from time import strftime
 
 try:
     import RPi.GPIO as GPIO
@@ -156,7 +156,7 @@ class Program:
                     print "Fan speed and lights updated"
 
                     with open("log.log", "a") as f:
-                        f.write("[", datetime.strftime("%d.%m.%Y %H:%M"), "]:", self.currentTemp + "'C")
+                        f.write("[", strftime("%d.%m.%Y %H:%M"), "]:", self.currentTemp + "'C")
 
                 print "Temperature:", self.currentTemp  # for debugging purposes, will probably not be here in finished product
 
