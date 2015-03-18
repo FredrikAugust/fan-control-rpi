@@ -156,7 +156,7 @@ class Program:
                     print "Fan speed and lights updated"
 
                     with open("log.log", "a") as f:
-                        f.write("[", strftime("%d.%m.%Y %H:%M"), "]:", str(self.currentTemp) + "'C")
+                        f.write(("[", strftime("%d.%m.%Y %H:%M"), "]:", str(self.currentTemp) + "'C"))
 
                 print "Temperature:", self.currentTemp  # for debugging purposes, will probably not be here in finished product
 
