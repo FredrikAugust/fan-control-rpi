@@ -44,8 +44,6 @@ class FanControl:
         with a 3.3v current + 1k ohm resistor.
         """
 
-        self.fanPin = 4
-
         if temperature >= self.temp3:
             GPIO.output(self.fanPin, 1)
         else:
@@ -63,8 +61,10 @@ class FanControl:
         
         self.fanAuto = 26  # This will be used to determine whether auto mode is wanted or not
         self.tempLights = [18, 23, 24]  # 18 = low, 23 = med, 24 = hot
+        self.fanPin = 4  # This will turn on and off the transistor that controls the fan
         
         GPIO.setup(self.fanAuto, GPIO.IN)  # reads from the fanAuto pin
+        GPIO.setup(self.fanPin, GPIO.OUT)
         
         for tempLight in self.tempLights:
             GPIO.setup(tempLight, GPIO.OUT)  # sets these pins to output
@@ -131,7 +131,6 @@ class Program:
         clearScreen()
 
         self.temperatureControl = FanControl()
-        self.temperatureControl.setPins()
 
         prevTemp = 0
 
