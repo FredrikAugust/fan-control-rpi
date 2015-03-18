@@ -7,6 +7,7 @@ import re
 from sys import exit
 import os
 from time import sleep
+import datetime
 
 try:
     import RPi.GPIO as GPIO
@@ -20,16 +21,35 @@ def clearScreen():
 
 
 class FanControl:
-    def powerLights(self):
-        for light in self.tempLights:
-            GPIO.cleanup(light)
+    def powerLights(self, temperature):
+        """Simple program that flashes each light, turns off all the lights,
+        and then lights up a light depending on the temperature of the Raspberry Pi
+        """
 
-        if self.getTemp() >= self.temp1 and self.temp1 < self.temp2:
+        for light in self.tempLights:
+            GPIO.output(light, 1)
+            sleep(1)
+            GPIO.output(light, 0)
+
+        if temperature >= self.temp1 and self.temp1 < self.temp2:
             GPIO.output(self.tempLights[0], 1)
-        elif self.getTemp() >= self.temp2 and self.temp2 < self.temp3:
+        elif temperature >= self.temp2 and self.temp2 < self.temp3:
             GPIO.output(self.tempLights[1], 1)
-        elif self.getTemp() >= self.self.temp3:
+        elif temperature >= self.self.temp3:
             GPIO.output(self.tempLights[2], 1)
+
+    def fanPower(self, temperature):
+        """This turns on or off the fan depending on the heat of the Raspberry Pi
+        The fan is running a 5v current, so I will use a transistor that is controlled
+        with a 3.3v current + 1k ohm resistor.
+        """
+
+        self.fanPin = 4
+
+        if temperature >= self.temp3:
+            GPIO.output(self.fanPin, 1)
+        else:
+            GPIO.output(self.fanPin, 0)
 
 
     def setPins(self):
@@ -111,8 +131,17 @@ class Program:
         clearScreen()
 
         self.temperatureControl = FanControl()
+        prevTemp = 0
 
-        print "Temperature:", self.temperatureControl.getTemp()  # Debug
+        while True:
+            self.currentTemp = self.temperatureControl.getTemp()
+            prevTemp = self.currentTemp
+
+            if self.currentTemp != prevTemp:
+                self.temperatureControl.powerLights(self.currentTemp)
+                self.temperatureControl.fanPower(self.currentTemp)
+
+            print "Temperature:", self.currentTemp  # for debugging purposes, will probably not be here in finished product
 
 
 program = Program()  # Instanciate main class
