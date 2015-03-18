@@ -1,0 +1,4 @@
+# Git ignore file, this prevents the log and txt files from being added to the git repo
+
+*.txt
+*.log
