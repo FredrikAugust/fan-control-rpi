@@ -18,13 +18,13 @@ class FanControl:
     def setPins(self):
         """Set up the pins, as of now I will use GPIO.BCM"""
         
+        GPIO.setwarnings(False)
+        
         GPIO.cleanup()
     
         GPIO.setmode(GPIO.BCM)
-        GPIO.setwarnings(False)
         
         self.fanAuto = 26  # This will be used to determine whether auto mode is wanted or not
-        
         self.tempLights = [18, 23, 24]  # 18 = low, 23 = med, 24 = hot
         
         GPIO.setup(self.fanAuto, GPIO.IN)  # reads from the fanAuto pin
@@ -35,6 +35,10 @@ class FanControl:
         print "Pins are set"
     
     def getTemp(self):
+        """Create a file from the result of a command that gets the system temp
+        Then reads it using with 'with'
+        """
+        
         os.system("/opt/vc/bin/vcgencmd measure_temp >> readTemp.txt")
         
         with open("readTemp.txt") as file:
@@ -65,8 +69,8 @@ class FanControl:
                 print "Temp 3:", self.temp3
         else:
             self.temp1 = 35
-            self.temp2 = 45
-            self.temp3 = 60
+            self.temp2 = 40
+            self.temp3 = 50
             
             print "Temperatures set."
             print "Temp 1:", self.temp1
@@ -84,6 +88,8 @@ class FanControl:
         self.setPins()
         
         self.tempTemp = self.getTemp()
-        print self.tempTemp
+        print self.tempTemp  # Debug
+
+
 
 Control = FanControl()
