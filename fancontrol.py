@@ -5,9 +5,9 @@ Copyrights: MrMadsenMalmo 2015
 
 import re
 from sys import exit
-import os
 from time import sleep
-import datetime
+import os
+from datetime import datetime
 
 try:
     import RPi.GPIO as GPIO
@@ -31,11 +31,11 @@ class FanControl:
             sleep(1)
             GPIO.output(light, 0)
 
-        if temperature >= self.temp1 and self.temp1 < self.temp2:
+        if temperature < self.temp2:
             GPIO.output(self.tempLights[0], 1)
-        elif temperature >= self.temp2 and self.temp2 < self.temp3:
+        elif temperature >= self.temp2 and temperature < self.temp3:
             GPIO.output(self.tempLights[1], 1)
-        elif temperature >= self.self.temp3:
+        elif temperature >= self.temp3:
             GPIO.output(self.tempLights[2], 1)
 
     def fanPower(self, temperature):
@@ -70,19 +70,22 @@ class FanControl:
             GPIO.setup(tempLight, GPIO.OUT)  # sets these pins to output
         
         print "Pins are set"
+
+        sleep(1)
     
     def getTemp(self):
         """Create a file from the result of a command that gets the system temp
         Then reads it using with 'with'
         """
+
+        os.system("vcgencmd measure_temp >> currentTemp.txt")
         
-        os.system("/opt/vc/bin/vcgencmd measure_temp >> readTemp.txt")
-        
-        with open("readTemp.txt") as file:
-            content = file.read()
-            
-            self.temperature = re.search("temp\=(?P<temp>[\d\.]+)\'C", content, re.VERBOSE|re.MULTILINE)
-            return float(self.temperature.group('temp'))
+        with open("currentTemp.txt", "r+") as file:
+            self.tempP = file.read()
+            file.truncate(0)
+
+        self.temperature = re.search("temp\=(?P<temp>[\d\.]+)\'C", self.tempP, re.VERBOSE|re.MULTILINE)
+        return float(self.temperature.group('temp'))
         
     def setTemp(self, mode=False):
         """Set the temperatures (temp) either automatically or manually with user input"""
@@ -104,6 +107,8 @@ class FanControl:
                 print "Temp 1:", self.temp1
                 print "Temp 2:", self.temp2
                 print "Temp 3:", self.temp3
+                
+                sleep(1)
         else:
             self.temp1 = 35
             self.temp2 = 40
@@ -113,6 +118,8 @@ class FanControl:
             print "Temp 1:", self.temp1
             print "Temp 2:", self.temp2
             print "Temp 3:", self.temp3
+
+            sleep(1)
     
     def __init__(self):
         useDefault = raw_input("Would you like to set the temperatures manually? y/n\n")
@@ -132,17 +139,24 @@ class Program:
 
         self.temperatureControl = FanControl()
 
-        prevTemp = 0
+        with open("log.log", "r") as f:
+            tempContent = f.readline()
+            
+            prevTemp = int(re.search("\:\s(?P<temp>[\d]+)\'C", tempContent, re.VERBOSE).group("temp"))
 
         while True:
             try:
+                clearScreen()
                 self.currentTemp = self.temperatureControl.getTemp()
 
                 if self.currentTemp != prevTemp:
                     self.temperatureControl.powerLights(self.currentTemp)
                     self.temperatureControl.fanPower(self.currentTemp)
-
+                    
                     print "Fan speed and lights updated"
+
+                    with open("log.log", "a") as f:
+                        f.write("[", datetime.strftime("%d.%m.%Y %H:%M"), "]:", self.currentTemp + "'C")
 
                 print "Temperature:", self.currentTemp  # for debugging purposes, will probably not be here in finished product
 
@@ -152,6 +166,7 @@ class Program:
 
             except KeyboardInterrupt:
                 GPIO.cleanup()
+                os.system("rm currentTemp.txt")
                 exit("You terminated the process")
 
 
