@@ -6,6 +6,7 @@ Copyrights: MrMadsenMalmo 2015
 import re
 from sys import exit
 import os
+from time import sleep
 
 try:
     import RPi.GPIO as GPIO
@@ -19,6 +20,18 @@ def clearScreen():
 
 
 class FanControl:
+    def powerLights(self):
+        for light in self.tempLights:
+            GPIO.cleanup(light)
+
+        if self.getTemp() >= self.temp1 and self.temp1 < self.temp2:
+            GPIO.output(self.tempLights[0], 1)
+        elif self.getTemp() >= self.temp2 and self.temp2 < self.temp3:
+            GPIO.output(self.tempLights[1], 1)
+        elif self.getTemp() >= self.self.temp3:
+            GPIO.output(self.tempLights[2], 1)
+
+
     def setPins(self):
         """Set up the pins, as of now I will use GPIO.BCM"""
         
@@ -90,13 +103,13 @@ class FanControl:
             self.setTemp(True)
             
         self.setPins()
-        
-        self.tempTemp = self.getTemp()
 
 
 
 class Program:
     def Main(self):
+        clearScreen()
+
         self.temperatureControl = FanControl()
 
         print "Temperature:", self.temperatureControl.getTemp()  # Debug
