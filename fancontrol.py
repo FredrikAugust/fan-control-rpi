@@ -135,13 +135,19 @@ class Program:
 
         while True:
             self.currentTemp = self.temperatureControl.getTemp()
-            prevTemp = self.currentTemp
 
             if self.currentTemp != prevTemp:
                 self.temperatureControl.powerLights(self.currentTemp)
                 self.temperatureControl.fanPower(self.currentTemp)
 
+                print "Fan speed and lights updated"
+
             print "Temperature:", self.currentTemp  # for debugging purposes, will probably not be here in finished product
+
+            prevTemp = self.currentTemp  # This is so it wont call the functions each time
+
+            sleep(10)
+
 
 
 program = Program()  # Instanciate main class
