@@ -131,22 +131,29 @@ class Program:
         clearScreen()
 
         self.temperatureControl = FanControl()
+        self.temperatureControl.setPins()
+
         prevTemp = 0
 
         while True:
-            self.currentTemp = self.temperatureControl.getTemp()
+            try:
+                self.currentTemp = self.temperatureControl.getTemp()
 
-            if self.currentTemp != prevTemp:
-                self.temperatureControl.powerLights(self.currentTemp)
-                self.temperatureControl.fanPower(self.currentTemp)
+                if self.currentTemp != prevTemp:
+                    self.temperatureControl.powerLights(self.currentTemp)
+                    self.temperatureControl.fanPower(self.currentTemp)
 
-                print "Fan speed and lights updated"
+                    print "Fan speed and lights updated"
 
-            print "Temperature:", self.currentTemp  # for debugging purposes, will probably not be here in finished product
+                print "Temperature:", self.currentTemp  # for debugging purposes, will probably not be here in finished product
 
-            prevTemp = self.currentTemp  # This is so it wont call the functions each time
+                prevTemp = self.currentTemp  # This is so it wont call the functions each time
 
-            sleep(10)
+                sleep(10)
+
+            except KeyboardInterrupt:
+                GPIO.cleanup()
+                exit("You terminated the process")
 
 
 
