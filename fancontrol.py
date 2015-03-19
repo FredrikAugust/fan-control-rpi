@@ -59,12 +59,12 @@ class FanControl:
     
         GPIO.setmode(GPIO.BCM)
         
-        self.fanAuto = 26  # This will be used to determine whether auto mode is wanted or not
-        self.tempLights = [18, 23, 24]  # 18 = low, 23 = med, 24 = hot
-        self.fanPin = 4  # This will turn on and off the transistor that controls the fan
+        self.tempLights = [0, 0, 0]  # low, med, hot
+        self.fanPin = 0  # This will turn on and off the transistor that controls the fan
+        self.autoPin = 0  # This will determine whether to use auto mode or not
         
-        GPIO.setup(self.fanAuto, GPIO.IN)  # reads from the fanAuto pin
         GPIO.setup(self.fanPin, GPIO.OUT)
+        GPIO.setup(self.autoPin, GPIO.IN)
         
         for tempLight in self.tempLights:
             GPIO.setup(tempLight, GPIO.OUT)  # sets these pins to output
@@ -87,6 +87,12 @@ class FanControl:
         self.temperature = re.search("temp\=(?P<temp>[\d\.]+)\'C", self.tempP, re.VERBOSE|re.MULTILINE)
         return float(self.temperature.group('temp'))
         
+    def printTemp(self):
+        print "Temperatures set."
+        print "Temp 1:", self.temp1
+        print "Temp 2:", self.temp2
+        print "Temp 3:", self.temp3
+
     def setTemp(self, mode=False):
         """Set the temperatures (temp) either automatically or manually with user input"""
 
@@ -103,10 +109,7 @@ class FanControl:
                     continue
 
                 validInput = True
-                print "Temperatures set."
-                print "Temp 1:", self.temp1
-                print "Temp 2:", self.temp2
-                print "Temp 3:", self.temp3
+                printTemp()
                 
                 sleep(1)
         else:
@@ -114,15 +117,14 @@ class FanControl:
             self.temp2 = 40
             self.temp3 = 50
             
-            print "Temperatures set."
-            print "Temp 1:", self.temp1
-            print "Temp 2:", self.temp2
-            print "Temp 3:", self.temp3
+            printTemp()
 
             sleep(1)
     
     def __init__(self):
         useDefault = raw_input("Would you like to set the temperatures manually? y/n\n")
+
+        self.autoOn = False
 
         if len(useDefault.strip()) == 0 or useDefault.strip().lower() == "n":
             self.setTemp()
@@ -145,30 +147,33 @@ class Program:
             prevTemp = int(re.search("\:\s(?P<temp>[\d]+)\'C", tempContent, re.VERBOSE).group("temp"))
 
         while True:
-            try:
-                clearScreen()
-                self.currentTemp = self.temperatureControl.getTemp()
+            if GPIO.input(self.temperatureControl.autoPin):
+                try:
+                    clearScreen()
+                    self.currentTemp = self.temperatureControl.getTemp()
 
-                if self.currentTemp != prevTemp:
-                    self.temperatureControl.powerLights(self.currentTemp)
-                    self.temperatureControl.fanPower(self.currentTemp)
+                    if self.currentTemp != prevTemp:
+                        self.temperatureControl.powerLights(self.currentTemp)
+                        self.temperatureControl.fanPower(self.currentTemp)
                     
-                    print "Fan speed and lights updated"
+                        print "Fan speed and lights updated"
 
-                    with open("log.log", "a") as f:
-                        f.write("\n[{}]: {}'C".format(strftime("%d.%m.%Y %H:%M"), self.currentTemp))
+                        with open("log.log", "a") as f:
+                            f.write("\n[{}]: {}'C".format(strftime("%d.%m.%Y %H:%M"), self.currentTemp))
 
-                print "Temperature:", self.currentTemp  # for debugging purposes, will probably not be here in finished product
+                    print "Temperature:", self.currentTemp  # for debugging purposes, will probably not be here in finished product
 
-                prevTemp = self.currentTemp  # This is so it wont call the functions each time
+                    prevTemp = self.currentTemp  # This is so it wont call the functions each time
 
+                    sleep(10)
+
+                except KeyboardInterrupt:
+                    GPIO.cleanup()
+                    os.system("rm currentTemp.txt")
+                    exit("You terminated the process")
+            else:
+                print "Auto-mode not activated"
                 sleep(10)
-
-            except KeyboardInterrupt:
-                GPIO.cleanup()
-                os.system("rm currentTemp.txt")
-                exit("You terminated the process")
-
 
 
 program = Program()  # Instanciate main class
