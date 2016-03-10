@@ -136,7 +136,7 @@ class FanControl:
 
 
 class Program:
-    def Main(self):
+    def main(self):
         clearScreen()
 
         self.temperatureControl = FanControl()
@@ -177,4 +177,4 @@ class Program:
 
 
 program = Program()  # Instanciate main class
-program.Main()  # Start the program
+program.main()  # Start the program
