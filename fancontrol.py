@@ -5,7 +5,7 @@ Copyrights: MrMadsenMalmo 2015
 
 import re
 from sys import exit
-from time import sleep, strftime, strftime
+from time import sleep, strftime
 import os
 from time import strftime
 
