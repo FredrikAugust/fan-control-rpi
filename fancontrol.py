@@ -1,6 +1,6 @@
 '''This is a script to automatically control the fans of my Raspberry Pi mini-PC build.
 If you find this useful somehow, feel free to use the code.
-Copyrights: MrMadsenMalmo 2015
+Created by Fredrik August Madsen-Malmo 2015
 '''
 
 import re
